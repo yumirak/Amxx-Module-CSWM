@@ -328,13 +328,11 @@ static void __FC Weapon_PrimaryAttack(CBasePlayerWeapon *BaseWeapon)
 		case A2_None: break;
 		case A2_Burst:
 		{
-			WEAPON_CURBURST(BaseWeapon)--;
-
 			if (WEAPON_INBURST(BaseWeapon))
 				break;
 
 			GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_LastFire, 4) = gpGlobals->time;
-			WEAPON_INBURST(BaseWeapon) = TRUE;
+			WEAPON_INBURST(BaseWeapon)  = TRUE;
 			WEAPON_CURBURST(BaseWeapon) = WEAPON_A2_OFFSET(BaseWeapon);
 			break;
 		}
@@ -512,20 +510,35 @@ static void Weapon_PostFrame_SecondaryAttack_Pre(CBasePlayerWeapon *BaseWeapon, 
 		}
 		case A2_Burst:
 		{
+			// Firing? No. => end.
 			if (!WEAPON_INBURST(BaseWeapon))
 				break;
 
+			// Decliment Burst Count.
+			// Already fired 1 shot when he first got here.
+			WEAPON_CURBURST(BaseWeapon)--;
+
+			// 2 => 1 => X
 			if (WEAPON_CURBURST(BaseWeapon))
 			{
-				if (!GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InReload, 4) && WEAPON_CLIP(BaseWeapon) && gpGlobals->time - 0.025f > GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_LastFire, 4))
-					return Weapon_PrimaryAttack(BaseWeapon);
+				// Not reloading and Ammo in clip.
+				if (!GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InReload, 4) && WEAPON_CLIP(BaseWeapon))
+				{
+					// Framerate.
+					if (gpGlobals->time - 0.025f > GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_LastFire, 4))
+						return Weapon_PrimaryAttack(BaseWeapon);
+					else
+						break;
+				}
 			}
 
+			// Is Semi Auto Weapon.
 			if ((1 << WEAPON_ID(BaseWeapon)) & SECONDARY_WEAPONS_BIT_SUM)
 				GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = TRUE;
 
+			// Reset.
 			WEAPON_CURBURST(BaseWeapon) = 0;
-			WEAPON_INBURST(BaseWeapon) = FALSE;
+			WEAPON_INBURST(BaseWeapon)  = FALSE;
 			break;
 		}
 		case A2_AutoPistol:
