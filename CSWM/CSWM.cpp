@@ -515,7 +515,7 @@ static void Weapon_PostFrame_SecondaryAttack_Pre(CBasePlayerWeapon *BaseWeapon, 
 				break;
 
 			// Framerate.
-			if (gpGlobals->time - 0.025f > GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_LastFire, 4))
+			if (gpGlobals->time - 0.03f > GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_LastFire, 4))
 			{
 				// Decliment Burst Count.
 				WEAPON_CURBURST(BaseWeapon)--;
