@@ -473,10 +473,12 @@ static cell AMX_NATIVE_CALL BuildWeaponPrimaryAttack(AMX *Plugin, cell *Params)
 	Weapon.Delay = CellToFloat(Params[2]);
 	Weapon.Damage = CellToFloat(Params[3]);
 	Weapon.Recoil = CellToFloat(Params[4]);
+	cell Animation = *GetAMXAddr(Plugin, Params[5]);
 
-	if ((Params[0] / sizeof(cell)) >= 5 && *GetAMXAddr(Plugin, Params[5]))
+	if ((Params[0] / sizeof(cell)) >= 5 && Animation)
 	{
-		Weapon.AnimS.Append(Params[5]);
+		Weapon.AnimS.Clear();
+		Weapon.AnimS.Append(Animation);
 
 		for (Index = 5; Index <= Params[0] / (cell)sizeof(cell); Index++)
 			Weapon.AnimS.Append(*GetAMXAddr(Plugin, Params[Index]));

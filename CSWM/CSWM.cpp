@@ -1739,7 +1739,8 @@ BOOL DispatchSpawn_Post(edict_s *Entity)
 		}
 		
 		CheckWeapon(Weapon);
-		RecordWeaponDurationList(Weapons[Index]);
+		RecordWeaponDurationList(Weapon);
+
 		WeaponListMap.Insert(Weapon.GModel, WEAPON_TYPE_ID[Weapons[Index].Type]);
 	}
 	
