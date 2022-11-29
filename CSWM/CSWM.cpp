@@ -469,7 +469,7 @@ static void __FC Weapon_ReloadShotgun(CBasePlayerWeapon *BaseWeapon)
 				= GetPrivateData(float, BasePlayer, CBaseMonster_NextAttack, 5)
 				= 0.55f;
 		}
-		else if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InSpecialReload, 5) == 1)
+		else if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InSpecialReload, 4) == 1)
 		{
 			if (GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_TimeWeaponIdle, 4) > 0.0f)
 				return;
@@ -672,13 +672,13 @@ static void __FC Weapon_IdleShotgun(CBasePlayerWeapon *BaseWeapon)
 		{
 			if (WEAPON_CLIP(BaseWeapon) == 0 && GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InSpecialReload, 4) == 0 && Ammo)
 			{
-				((FN_WEAPON_RELOAD)FWeapon_Reload[Weapon.Type])(BaseWeapon);
+				Weapon_ReloadShotgun(BaseWeapon);
 			}
 			else if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InSpecialReload, 4) != 0)
 			{
 				if (WEAPON_CLIP(BaseWeapon) != Weapon.Clip && Ammo)
 				{
-					((FN_WEAPON_RELOAD)FWeapon_Reload[Weapon.Type])(BaseWeapon);
+					Weapon_ReloadShotgun(BaseWeapon);
 				}
 				else
 				{
@@ -693,7 +693,8 @@ static void __FC Weapon_IdleShotgun(CBasePlayerWeapon *BaseWeapon)
 			}
 		}
 	}
-	else ((FN_WEAPON_IDLE)FWeapon_Idle[WType::Shotgun])(BaseWeapon);
+	else 
+		((FN_WEAPON_IDLE)FWeapon_Idle[WType::Shotgun])(BaseWeapon);
 }
 
 static DECLFUNC_OS(void, Weapon_Holster, CBasePlayerWeapon *BaseWeapon, int SkipLocal)
@@ -1625,10 +1626,18 @@ void SetClientKeyValue(int Index, char *InfoBuffer, const char *Key, const char 
 
 static int HOOK_OFFSETS[] =
 {
-	EO_Spawn, EO_Item_AddToPlayer, EO_Item_Deploy,
-	EO_Weapon_PrimaryAttack, EO_Weapon_SecondaryAttack, EO_Weapon_Reload,
-	EO_Item_ItemPostFrame, EO_Weapon_WeaponIdle, EO_Item_Holster,
-	EO_Item_GetMaxSpeed, EO_Weapon_ExtractAmmo, EO_Weapon_SendWeaponAnim,
+	EO_Spawn, 
+	EO_Item_AddToPlayer, 
+	EO_Item_Deploy,
+	EO_Weapon_PrimaryAttack, 
+	EO_Weapon_SecondaryAttack, 
+	EO_Weapon_Reload,
+	EO_Item_ItemPostFrame, 
+	EO_Weapon_WeaponIdle, 
+	EO_Item_Holster,
+	EO_Item_GetMaxSpeed, 
+	EO_Weapon_ExtractAmmo, 
+	EO_Weapon_SendWeaponAnim,
 };
 
 static void *HOOK_FUNCS[][MAX_WEAPON_TYPES] =
