@@ -689,7 +689,8 @@ static void __FC Weapon_IdleShotgun(CBasePlayerWeapon *BaseWeapon)
 			}
 			else
 			{
-				SendWeaponAnim(BaseWeapon, XM1014_IDLE);
+				((FN_WEAPON_IDLE)FWeapon_Idle[WType::Shotgun])(BaseWeapon);
+//				SendWeaponAnim(BaseWeapon, XM1014_IDLE);
 			}
 		}
 	}
