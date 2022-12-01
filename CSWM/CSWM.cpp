@@ -246,6 +246,14 @@ static void __FC Weapon_PrimaryAttack(CBasePlayerWeapon *BaseWeapon)
 		return;
 	}
 
+	// Added: Semi-Auto Logic.
+	if ((Weapon.Flags & WFlag::PrimarySemiAuto   && !WEAPON_INA2(BaseWeapon)) ||
+		(Weapon.Flags & WFlag::SecondarySemiAuto &&  WEAPON_INA2(BaseWeapon)))
+	{
+		if (GetPrivateData(int, BasePlayer, CBasePlayerWeapon_ShotsFired, 4) > 1);
+			return;
+	}
+
 	if ((Weapon.Forwards[WForward::PrimaryAttackPre]) && MF_ExecuteForward(Weapon.Forwards[WForward::PrimaryAttackPre], EDI_FROM_PD(BaseWeapon)) > WReturn::IGNORED)
 		return;
 
