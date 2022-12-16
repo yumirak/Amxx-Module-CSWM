@@ -132,24 +132,28 @@ void GameDLLInit_Post(void)
 static void __FC Weapon_SpawnPistol(CBasePlayerWeapon *BaseWeapon)
 {
 	WEAPON_FID(BaseWeapon) = WType::Pistol;
+	WEAPON_ID(BaseWeapon) = CSW_P228;
 	((FN_WEAPON_SPAWN)FWeapon_Spawn[WType::Pistol])(BaseWeapon);
 }
 
 static void __FC Weapon_SpawnShotgun(CBasePlayerWeapon *BaseWeapon)
 {
 	WEAPON_FID(BaseWeapon) = WType::Shotgun;
+	WEAPON_ID(BaseWeapon) = CSW_XM1014;
 	((FN_WEAPON_SPAWN)FWeapon_Spawn[WType::Shotgun])(BaseWeapon);
 }
 
 static void __FC Weapon_SpawnRifle(CBasePlayerWeapon *BaseWeapon)
 {
 	WEAPON_FID(BaseWeapon) = WType::Rifle;
+	WEAPON_ID(BaseWeapon) = CSW_AK47;
 	((FN_WEAPON_SPAWN)FWeapon_Spawn[WType::Rifle])(BaseWeapon);
 }
 
 static void __FC Weapon_SpawnSniper(CBasePlayerWeapon *BaseWeapon)
 {
 	WEAPON_FID(BaseWeapon) = WType::Sniper;
+	WEAPON_ID(BaseWeapon) = CSW_AWP;
 	((FN_WEAPON_SPAWN)FWeapon_Spawn[WType::Sniper])(BaseWeapon);
 }
 
@@ -251,9 +255,10 @@ static void __FC Weapon_PrimaryAttack(CBasePlayerWeapon *BaseWeapon)
 
 	PunchAngleOld = PlayerEntVars->punchangle;
 	((FN_WEAPON_PRIMARYATTACK)FWeapon_PrimaryAttack[WEAPON_FID(BaseWeapon)])(BaseWeapon);
+	GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4)++;
 
 	if ((Weapon.A2I == A2_Burst || Weapon.A2I == A2_MultiShot) && InAttack2)
-		GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = FALSE;
+		GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = 0;
 
 	if (Weapon.Flags & AutoSniper)
 		GetPrivateData(int, BasePlayer, CBasePlayer_FOV, 5) = FOV;
@@ -543,7 +548,7 @@ static void Weapon_PostFrame_SecondaryAttack_Pre(CBasePlayerWeapon *BaseWeapon, 
 			}
 			// Is Semi Auto Weapon.
 			if ((1 << WEAPON_ID(BaseWeapon)) & SECONDARY_WEAPONS_BIT_SUM)
-				GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = TRUE;
+				GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) ++;
 
 			break;
 		}
@@ -585,7 +590,7 @@ static void Weapon_PostFrame_SecondaryAttack_Post(CBasePlayerWeapon *BaseWeapon)
 			case A2_Zoom: Attack2_Zoom(BasePlayer, BaseWeapon, Weapon); GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_NextSecondaryAttack, 4) = 0.3f; break;
 			case A2_Switch: Attack2_Switch(BasePlayer, BaseWeapon, Weapon); break;
 			case A2_Burst: Attack2_Burst(BasePlayer, BaseWeapon, Weapon); break;
-			case A2_AutoPistol: WEAPON_INA2(BaseWeapon) = TRUE; GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = FALSE; break;
+			case A2_AutoPistol: WEAPON_INA2(BaseWeapon) = TRUE; GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = 0; break;
 			case A2_MultiShot: Attack2_MultiShot(BaseWeapon, Weapon); break;
 			case A2_KnifeAttack: Attack2_KnifeAttack(BasePlayer, BaseWeapon, Weapon); break;
 			case A2_InstaSwitch: Attack2_InstaSwitch(ED_FROM_PD(BasePlayer), BaseWeapon, Weapon); break;
@@ -621,7 +626,33 @@ static void __FC Weapon_PostFrame(CBasePlayerWeapon *BaseWeapon)
 			Ammo -= Add;
 			GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_InReload, 4) = FALSE;
 		}
+		entvars_t* PlayerVars = EV_FROM_PD(GetPrivateData(CBasePlayer*, BaseWeapon, CBasePlayerItem_Player, 4));
 
+		if (!(PlayerVars->button & (IN_ATTACK | IN_ATTACK2)))
+		{
+			if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_DelayFire, 4))
+			{
+				GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_DelayFire, 4) = FALSE;
+				if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) > 15)
+					GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = 15;
+				GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_DecreaseShotsFired, 4) = 0.4f;
+			}
+			if (WEAPON_FID(BaseWeapon) == WType::Pistol)
+			{
+				GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = 0;
+			}
+			else {
+				if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) > 0 && GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_DecreaseShotsFired, 4) < 0.0f)
+				{
+					GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_DecreaseShotsFired, 4) = 0.0225f;
+					GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4)--;
+//					if (GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) == 0)
+//					{
+//						GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_Accuracy, 4) = GetBaseAccuracy(WEAPON_ID(BaseWeapon));
+//					}
+				}
+			}
+		}
 		CheckWeaponAttack2(BaseWeapon);
 	}
 
@@ -1192,10 +1223,58 @@ static void SetWeaponHUD(edict_t *PlayerEdict, int WeaponID)
 	MESSAGE_BEGIN(MSG_ONE, MESSAGE_WEAPONLIST, NULL, PlayerEdict);
 	switch (WeaponID)
 	{
-		case CSW_P228: { WRITE_STRING("weapon_p228");  WRITE_BYTE(9);  WRITE_BYTE(52); WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(1); WRITE_BYTE(3); WRITE_BYTE(1); WRITE_BYTE(0); break; }
-		case CSW_XM1014: { WRITE_STRING("weapon_xm1014");  WRITE_BYTE(5);  WRITE_BYTE(32); WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(0); WRITE_BYTE(12); WRITE_BYTE(5); WRITE_BYTE(0); break; }
-		case CSW_AK47: {  WRITE_STRING("weapon_ak47"); WRITE_BYTE(2);  WRITE_BYTE(90); WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(0); WRITE_BYTE(1); WRITE_BYTE(28); WRITE_BYTE(0); break; }
-		case CSW_AWP: { WRITE_STRING("weapon_awp");  WRITE_BYTE(1);  WRITE_BYTE(30); WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(0); WRITE_BYTE(2); WRITE_BYTE(18); WRITE_BYTE(0); break; }
+		case CSW_P228: 
+		{ 
+			WRITE_STRING("weapon_p228");	// Weapon Name
+			WRITE_BYTE(9);					// PrimaryAmmoID
+			WRITE_BYTE(52);					// PrimaryAmmoMaxAmount
+			WRITE_BYTE(-1);					// SecondaryAmmoID
+			WRITE_BYTE(-1);					// SecondaryAmmoMaxAmmount
+			WRITE_BYTE(1);					// Slot (0..N)
+			WRITE_BYTE(3);					// Number In Slot (1...N)
+			WRITE_BYTE(CSW_P228);			// Weapon ID
+			WRITE_BYTE(0);					// Flags
+			break; 
+		}
+		case CSW_XM1014: 
+		{ 
+			WRITE_STRING("weapon_xm1014");  
+			WRITE_BYTE(5);  
+			WRITE_BYTE(32); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(0); 
+			WRITE_BYTE(12); 
+			WRITE_BYTE(CSW_XM1014); 
+			WRITE_BYTE(0); 
+			break; 
+		}
+		case CSW_AK47: 
+		{  
+			WRITE_STRING("weapon_ak47"); 
+			WRITE_BYTE(2);  
+			WRITE_BYTE(90); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(0); 
+			WRITE_BYTE(1); 
+			WRITE_BYTE(CSW_AK47); 
+			WRITE_BYTE(0); 
+			break; 
+		}
+		case CSW_AWP: 
+		{ 
+			WRITE_STRING("weapon_awp");  
+			WRITE_BYTE(1);  
+			WRITE_BYTE(30); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(0); 
+			WRITE_BYTE(2); 
+			WRITE_BYTE(CSW_AWP);
+			WRITE_BYTE(0); 
+			break; 
+		}
 	}
 	MESSAGE_END();
 }
@@ -1209,10 +1288,46 @@ static void SetWeaponHUDCustom(edict_t *PlayerEdict, CWeapon &Weapon)
 
 	switch (Weapon.Type)
 	{
-		case WType::Pistol: { WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(1); WRITE_BYTE(3); WRITE_BYTE(1); WRITE_BYTE(0); break; }
-		case WType::Shotgun: { WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(0); WRITE_BYTE(12); WRITE_BYTE(5); WRITE_BYTE(0); break; }
-		case WType::Rifle: { WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(0); WRITE_BYTE(1); WRITE_BYTE(28); WRITE_BYTE(0); break; }
-		case WType::Sniper: { WRITE_BYTE(-1); WRITE_BYTE(-1); WRITE_BYTE(0); WRITE_BYTE(2); WRITE_BYTE(18); WRITE_BYTE(0); break; }
+		case WType::Pistol: 
+		{ 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(1); 
+			WRITE_BYTE(3); 
+			WRITE_BYTE(CSW_P228);
+			WRITE_BYTE(0); 
+			break; 
+		}
+		case WType::Shotgun: 
+		{ 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(0); 
+			WRITE_BYTE(12); 
+			WRITE_BYTE(CSW_XM1014);
+			WRITE_BYTE(0); 
+			break; 
+		}
+		case WType::Rifle: 
+		{ 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(0); 
+			WRITE_BYTE(1); 
+			WRITE_BYTE(CSW_AK47);
+			WRITE_BYTE(0); 
+			break; 
+		}
+		case WType::Sniper: 
+		{ 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(-1); 
+			WRITE_BYTE(0); 
+			WRITE_BYTE(2); 
+			WRITE_BYTE(CSW_AWP);
+			WRITE_BYTE(0); 
+			break; 
+		}
 	}
 
 	MESSAGE_END();
@@ -1440,7 +1555,7 @@ static void Attack2_MultiShot(CBasePlayerWeapon *BaseWeapon, CWeapon &Weapon)
 			Weapon_PrimaryAttack(BaseWeapon);
 	}
 
-	GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4) = TRUE;
+	GetPrivateData(int, BaseWeapon, CBasePlayerWeapon_ShotsFired, 4)++;
 	GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_NextSecondaryAttack, 4) = Weapon.Delay;
 	WEAPON_INA2(BaseWeapon) = FALSE;
 }

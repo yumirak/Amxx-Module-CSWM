@@ -610,7 +610,10 @@ static cell AMX_NATIVE_CALL BuildWeaponSecondaryAttack(AMX *Plugin, cell *Params
 			GetAttack2Data(int, Weapon.A2V, WA2_KNIFEATTACK_DAMAGE_MIN) = *MF_GetAmxAddr(Plugin, Params[7]);
 			GetAttack2Data(int, Weapon.A2V, WA2_KNIFEATTACK_DAMAGE_MAX) = *MF_GetAmxAddr(Plugin, Params[8]);
 			GetAttack2Data(float, Weapon.A2V, WA2_KNIFEATTACK_KNOCKBACK) = CellToFloat(*GetAMXAddr(Plugin, Params[9]));
-			PRECACHE_SOUND(GetAttack2Data(const char *, Weapon.A2V, WA2_KNIFEATTACK_SOUND) = STRING(ALLOC_STRING(MF_GetAmxString(Plugin, Params[10], 0, NULL))));
+//			PRECACHE_SOUND(GetAttack2Data(const char *, Weapon.A2V, WA2_KNIFEATTACK_SOUND) = STRING(ALLOC_STRING(MF_GetAmxString(Plugin, Params[10], 0, NULL))));
+			char Buffer[260];
+			sprintf(Buffer, "sound/%s", GetAttack2Data(const char*, Weapon.A2V, WA2_KNIFEATTACK_SOUND) = STRING(ALLOC_STRING(MF_GetAmxString(Plugin, Params[10], 0, NULL))));
+			PRECACHE_GENERIC(STRING(ALLOC_STRING(Buffer)));
 			break;
 		}
 		case A2_InstaSwitch:
@@ -713,6 +716,7 @@ static cell AMX_NATIVE_CALL PrecacheWeaponModelSounds(AMX *AMX, cell *Params)
 	studiohdr_t *Studio = (studiohdr_t *)GET_MODEL_PTR(InfoEdict);
 	REMOVE_ENTITY(InfoEdict);
 	mstudioseqdesc_t *SeqDesc = (mstudioseqdesc_t *)((uintptr_t)Studio + Studio->seqindex);
+	char Buffer[260];
 
 	for (int index = 0; index < Studio->numseq; index++)
 	{
@@ -726,7 +730,9 @@ static cell AMX_NATIVE_CALL PrecacheWeaponModelSounds(AMX *AMX, cell *Params)
 			if (Event[i].options[0] == '\0')
 				continue;
 			
-			PRECACHE_SOUND(Event[i].options);
+//			PRECACHE_SOUND(Event[i].options);
+			sprintf(Buffer, "sound/%s", Event[i].options);
+			PRECACHE_GENERIC(STRING(ALLOC_STRING(Buffer)));
 		}
 	}
 
@@ -1878,7 +1884,10 @@ void ReadWeaponAttack2(CWeapon &Weapon, char *ValuePack)
 			GetAttack2Data(float, Weapon.A2V, WA2_SWITCH_DELAY) = FValue[12];
 			GetAttack2Data(float, Weapon.A2V, WA2_SWITCH_DAMAGE) = FValue[13];
 			GetAttack2Data(float, Weapon.A2V, WA2_SWITCH_RECOIL) = FValue[14];
-			PRECACHE_SOUND(GetAttack2Data(const char *, Weapon.A2V, WA2_SWITCH_FSOUND) = STRING(ALLOC_STRING(SValue[15])));
+//			PRECACHE_SOUND(GetAttack2Data(const char *, Weapon.A2V, WA2_SWITCH_FSOUND) = STRING(ALLOC_STRING(SValue[15])));
+			char Buffer[260];
+			sprintf(Buffer, "sound/%s", GetAttack2Data(const char*, Weapon.A2V, WA2_SWITCH_FSOUND) = STRING(ALLOC_STRING(SValue[15])));
+			PRECACHE_GENERIC(STRING(ALLOC_STRING(Buffer)));
 			break;
 		}
 		case A2_Burst:
@@ -1907,7 +1916,10 @@ void ReadWeaponAttack2(CWeapon &Weapon, char *ValuePack)
 			GetAttack2Data(int, Weapon.A2V, WA2_KNIFEATTACK_DAMAGE_MIN) = IValue[5];
 			GetAttack2Data(int, Weapon.A2V, WA2_KNIFEATTACK_DAMAGE_MAX) = IValue[6];
 			GetAttack2Data(float, Weapon.A2V, WA2_KNIFEATTACK_KNOCKBACK) = FValue[7];
-			PRECACHE_SOUND(GetAttack2Data(const char *, Weapon.A2V, WA2_KNIFEATTACK_SOUND) = STRING(ALLOC_STRING(SValue[8])));
+//			PRECACHE_SOUND(GetAttack2Data(const char *, Weapon.A2V, WA2_KNIFEATTACK_SOUND) = STRING(ALLOC_STRING(SValue[8])));
+			char Buffer[260];
+			sprintf(Buffer, "sound/%s", GetAttack2Data(const char*, Weapon.A2V, WA2_KNIFEATTACK_SOUND) = STRING(ALLOC_STRING(SValue[8])));
+			PRECACHE_GENERIC(STRING(ALLOC_STRING(Buffer)));
 			break;
 		}
 		case A2_InstaSwitch:
