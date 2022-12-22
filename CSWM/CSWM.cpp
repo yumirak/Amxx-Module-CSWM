@@ -194,6 +194,10 @@ static BOOL __FC Weapon_Deploy(CBasePlayerWeapon *BaseWeapon)
 	entvars_t *PlayerEntVars = EV_FROM_PD(BasePlayer);
 	PlayerEntVars->viewmodel = Weapon.VModel;
 	PlayerEntVars->weaponmodel = Weapon.PModel;
+
+	if (WEAPON_A2(BaseWeapon) == A2_Zoom || WEAPON_A2(BaseWeapon) == A2_ZoomCustom)
+		WEAPON_INA2(BaseWeapon) = FALSE;
+
 	BOOL SwitchON = (Weapon.A2I == A2_Switch && WEAPON_INA2(BaseWeapon)) ? TRUE : FALSE;
 
 	GetPrivateData(float, BasePlayer, CBaseMonster_NextAttack, 5)
