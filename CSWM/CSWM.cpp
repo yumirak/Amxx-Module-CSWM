@@ -386,8 +386,12 @@ static void __FC Weapon_Reload(CBasePlayerWeapon *BaseWeapon)
 	BOOL SwitchON = (Weapon.A2I == A2_Switch && WEAPON_INA2(BaseWeapon));
 
 	if (!(Weapon.Flags & WFlag::ReloadKeepFOV))
-		GetPrivateData(int, BasePlayer, CBasePlayer_FOV, 5) = CS_NO_ZOOM;
-
+	{
+		GetPrivateData(int, BasePlayer, CBasePlayer_FOV, 5) = CS_NO_ZOOM;	
+		if (WEAPON_A2(BaseWeapon) == A2_Zoom || WEAPON_A2(BaseWeapon) == A2_ZoomCustom)
+			WEAPON_INA2(BaseWeapon) = FALSE;
+	}
+	
 	GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_NextSecondaryAttack, 4)
 		= GetPrivateData(float, BaseWeapon, CBasePlayerWeapon_NextPrimaryAttack, 4)
 		= GetPrivateData(float, BasePlayer, CBaseMonster_NextAttack, 5)
@@ -1465,8 +1469,10 @@ static void Attack2_Zoom(CBasePlayer *BasePlayer, CBasePlayerWeapon *BaseWeapon,
 			break;
 		}
 	}
-
-	WEAPON_INA2(BaseWeapon) = !WEAPON_INA2(BaseWeapon);
+	if (FOV == CS_NO_ZOOM)
+		WEAPON_INA2(BaseWeapon) = FALSE;
+	else
+		WEAPON_INA2(BaseWeapon) = TRUE;
 
 	if (!(Weapon.Flags & WFlag::Zoom_NoSound))
 		CLIENT_COMMAND(ED_FROM_PD(BasePlayer), "spk weapons/zoom\n");
