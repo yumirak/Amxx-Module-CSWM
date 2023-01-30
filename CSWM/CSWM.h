@@ -316,7 +316,7 @@ struct CKnockbackInfo
 
 struct CParam
 {
-	char *Name;
+	const char *Name;
 	int Type;
 	int Offset;
 };

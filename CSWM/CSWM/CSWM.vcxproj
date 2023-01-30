@@ -153,6 +153,8 @@
       <WarningLevel>Level4</WarningLevel>
       <ShowIncludes>false</ShowIncludes>
       <SupportJustMyCode>false</SupportJustMyCode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
@@ -174,6 +176,8 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>CSWM_EXPORTS;__METAMOD_BUILD__;HAVE_STDINT_H;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(IncludePath)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
