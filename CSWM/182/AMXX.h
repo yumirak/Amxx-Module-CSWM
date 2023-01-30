@@ -291,7 +291,9 @@ typedef int (AMXAPI *AMX_DEBUG)(struct tagAMX *amx);
 		#define vsnprintf _vsnprintf
 	#endif
 #endif
-
+#if defined LINUX
+#define strnicmp strncasecmp
+#endif
 
 /* Some compilers do not support the #pragma align, which should be fine. Some
  * compilers give a warning on unknown #pragmas, which is not so fine...
