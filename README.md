@@ -14,7 +14,7 @@ Counter-Strike Weapon Mod :gun:
 <br>
 
 # Known Issues
-- Crosshair isn't working properly.
+- Crosshair isn't working properly.　=> Can't fix it. it is client logic.
 <br><br><br><br>
 
 # [Linux]
