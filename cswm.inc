@@ -25,38 +25,38 @@
  *
  * @note This function is used to retrieve an existing weapon definition or create a new one if it does not exist.
  *
- * @param model     Model of the weapon. Used to retrieve an existing weapon definition or create a new one if it does not exist.
- * @param type      Type of the weapon. Used to specify the weapon type. See WType enum in cswm_const.inc
- *                  Valid values are:
- *                  0 - Pistol or P228
- *                  1 - Shotgun or XM1014
- *                  2 - Rifle or AK47
- *                  3 - Sniper or AWP
- * @param name      Name of the weapon. This parameter is not used internally but can be retrieved through plugins. It is useful for menus.
+ * @param model         Model of the weapon. Used to retrieve an existing weapon definition or create a new one if it does not exist.
+ * @param type          Type of the weapon. Used to specify the weapon type. See WType enum in cswm_const.inc
+ *                      Valid values are:
+ *                      0 - Pistol or P228
+ *                      1 - Shotgun or XM1014
+ *                      2 - Rifle or AK47
+ *                      3 - Sniper or AWP
+ * @param name          Name of the weapon. This parameter is not used internally but can be retrieved through plugins. It is useful for menus.
  *
- * @return          The index of the created weapon definition.
+ * @return              The index of the created weapon definition.
  */
 native CreateWeapon(const model[], any:type, const name[]);
 
 /**
  * Creates an ammo with the specified cost, amount, and maximum count of ammunition.
  *
- * @param cost      The cost of the ammo in $.
- * @param amount    The count of ammunition. This is the count of ammo which will be given to the player after buying.
- * @param max       The maximum count of ammunition. The player can't buy more than this count of ammo.
+ * @param cost          The cost of the ammo in $.
+ * @param amount        The count of ammunition. This is the count of ammo which will be given to the player after buying.
+ * @param max           The maximum count of ammunition. The player can't buy more than this count of ammo.
  *
- * @return          The ammo index.
+ * @return              The ammo index.
  */
 native CreateAmmo(cost, amount, max);
 
 /**
  * Builds the view model, player view weapon model, and world model of the weapon with the specified index.
  *
- * @param weapon    The index of the weapon.
- * @param vModel    The view model of the weapon. Following models can be precached through custom paths.
- * @param pModel    The player view weapon model of the weapon.
- *                  Player view weapon model is the type of weapon model which is shown when another player is holding it.
- * @param wModel    The world model of the weapon. World model of the weapon is shown when the weapon is dropped.
+ * @param weapon        The index of the weapon.
+ * @param vModel        The view model of the weapon. Following models can be precached through custom paths.
+ * @param pModel        The player view weapon model of the weapon.
+ *                      Player view weapon model is the type of weapon model which is shown when another player is holding it.
+ * @param wModel        The world model of the weapon. World model of the weapon is shown when the weapon is dropped.
  *
  * @noreturn
  */
@@ -65,10 +65,10 @@ native BuildWeaponModels(weapon, const vModel[], const pModel[], const wModel[])
 /**
  * Builds the fire/shoot sound for the specified weapon.
  *
- * @param weapon    The index of the weapon.
- * @param sound     The fire/shoot sound.
- *                  The fire sound should be in the path: 'cstrike/sound/'.
- *                  For example, the path of the fire sound 'weapons/ak47-1.wav' is 'cstrike/sound/weapons/ak47-1.wav'.
+ * @param weapon        The index of the weapon.
+ * @param sound         The fire/shoot sound.
+ *                      The fire sound should be in the path: 'cstrike/sound/'.
+ *                      For example, the path of the fire sound 'weapons/ak47-1.wav' is 'cstrike/sound/weapons/ak47-1.wav'.
  *
  * @noreturn
  */
@@ -108,7 +108,7 @@ native BuildWeaponAmmunition(weapon, Clip, any:ammoID);
  * @param animation     Animation index of the weapon. Use model viewer to detect current animation index.
  *                      If you are not able to do this set animation to 0.
  *                      Setting animation to 0 will result auto detecting it. (However this is not 100% accurate)
- * @param duration      duration time of animation. This is time after player is able to shoot from weapon.
+ * @param duration      Duration time of animation. This is time after player is able to shoot from weapon.
  *                      If you want exact time then set this to 0.0.
  *
  * @noreturn
