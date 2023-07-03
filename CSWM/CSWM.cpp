@@ -69,10 +69,10 @@ const CAmmo DEFAULT_AMMOS[] =
 	{ AMMO_50AE_PRICE, AMMO_50AE_BUY, MAX_AMMO_50AE, "50AE" },
 	{ AMMO_357SIG_PRICE, AMMO_357SIG_BUY, MAX_AMMO_357SIG, "357SIG" },
 	{ AMMO_9MM_PRICE, AMMO_9MM_BUY, MAX_AMMO_9MM, "9mm" },
-	{ 200, AMMO_FLASHBANG, -1, "Flashbang" },
-	{ 300, AMMO_HEGRENADE, -1, "HEGrenade" },
-	{ 300, AMMO_SMOKEGRENADE, -1, "SmokeGrenade" },
-	{ 0, AMMO_C4, -1, "C4" },
+	{ 200, AMMO_FLASHBANG, MAX_AMMO_FLASHBANG, "Flashbang" },
+	{ 300, AMMO_HEGRENADE, MAX_AMMO_HEGRENADE, "HEGrenade" },
+	{ 300, AMMO_SMOKEGRENADE, MAX_AMMO_SMOKEGRENADE, "SmokeGrenade" },
+	{ 0, AMMO_C4, 1, "C4" },
 };
 
 int MI_Ring;
@@ -877,7 +877,7 @@ int Player_GiveAmmoByID(CBasePlayer *BasePlayer, int AmmoID, int Amount)
 	if (!CanHaveAmmo(BasePlayer, AmmoID))
 		return -1;
 
-	int Add = Ammos[AmmoID].Max == -1 ? 1 : min(Amount, Ammos[AmmoID].Max - GetPrivateDataEx(int, BasePlayer, CBasePlayer_Ammo, AmmoID, 5));
+	int Add = min(Amount, Ammos[AmmoID].Max - GetPrivateDataEx(int, BasePlayer, CBasePlayer_Ammo, AmmoID, 5));
 
 	if (Add < 1)
 		return -1;
