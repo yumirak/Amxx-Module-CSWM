@@ -1104,6 +1104,9 @@ void PlaybackEvent(int Flags, const edict_t *Invoker, unsigned short EI, float D
 	if (!Invoker)
 		return;
 
+	if (NUM_FOR_EDICT(Invoker) > gpGlobals->maxClients)
+		return;
+
 	CBasePlayerWeapon *BaseWeapon = GetPrivateData(CBasePlayerWeapon *, Invoker->pvPrivateData, CBasePlayer_ActiveItem, 5);
 
 	if (!BaseWeapon || !CUSTOM_WEAPON(BaseWeapon))
